@@ -1,0 +1,43 @@
+module -> function_definition function_definitions
+
+function_definitions -> function_definition function_definitions
+function_definitions -> EPSILON
+
+function_definition -> FN IDENTIFIER ( arguments_list ) type_specifier { expressions }
+
+arguments_list -> argument argument_trails
+arguments_list -> EPSILON
+argument_trails -> , arguments_list
+argument_trails -> EPSILON
+
+argument -> IDENTIFIER type_specifier
+
+type_specifier -> : IDENTIFIER
+
+expressions -> expression; expressions
+expressions -> EPSILON
+
+expression -> variable_declaration
+expression -> function_call
+expression -> rvalue
+expression -> EPSILON
+
+variable_declaration -> LET IDENTIFIER type_specifier assignment
+
+assignment -> = rvalue
+
+rvalue -> string_literal
+rvalue -> integer
+rvalue -> variable
+
+variable -> IDENTIFIER
+
+string_literal -> "characters"
+integer -> [0-9]+
+
+function_call -> IDENTIFIER ( passed_arguments )
+
+passed_arguments -> rvalue passed_arguments_trails
+passed_arguments -> EPSILON
+passed_arguments_trails -> , passed_arguments
+passed_arguments_trails -> EPSILON
