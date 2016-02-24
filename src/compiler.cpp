@@ -1,122 +1,111 @@
 #include <iostream>
-#include <unordered_map>
-#include <vector>
 #include "compiler.hpp"
 
-enum Opcode {
-	HLT,
-	PUSHI,
-	CALL,
-	PRINT
-};
-
-struct Instruction
-{
-	Opcode opcode;
-	int arg1, arg2, arg3;
-
-};
-
-struct Type
-{
-	std::string name;
-};
-
-struct FunctionArgument
-{
-	Type type;
-	std::string name;
-};
-
-struct Function
-{
-	std::string name;
-	std::vector<FunctionArgument> arguments;
-	Type returnType;
-	unsigned long offset;
-};
-
-struct Module
-{
-	std::unordered_map<std::string, Type> typeTable;
-	std::unordered_map<std::string, Function> functionTable;
-	unsigned long ip = 0;
-	std::vector<Instruction> instructions;
-	Module()
-	{
-		typeTable["Void"] = Type();
-		typeTable["Void"].name = "Void";
-		typeTable["Int"] = Type();
-		typeTable["Int"].name = "Int";
-		typeTable["String"] = Type();
-		typeTable["String"].name = "String";
-
-		Function print;
-		print.name = "print";
-		print.returnType = typeTable["Void"];
-		FunctionArgument argument;
-		argument.type = typeTable["String"];
-		argument.name = "str";
-		print.arguments.push_back(argument);
-		functionTable[print.name] = print;
-
-	}
-};
 
 void Compiler::Visit(ModuleRootNode* node)
 {
-	module_ = new Module();
+	module_ = Module();
 	for (auto child : node->children()) {
 		child->Accept(this);
 	}
+	auto main = module_.functionTable.find("main");
+	if (main == module_.functionTable.end()) {
+		throw "No function 'main' in module";
+	}
+	module_.entryPoint = module_.instructions.size();
+	Instruction saveReturnAddress;
+	saveReturnAddress.opcode = PUSHI;
+	saveReturnAddress.arg1 = module_.instructions.size() + 3;
+	module_.instructions.push_back(saveReturnAddress);
+	Instruction pushJmpAddress;
+	pushJmpAddress.opcode = PUSHI;
+	pushJmpAddress.arg1 = main->second.offset;
+	module_.instructions.push_back(pushJmpAddress);
+	Instruction call;
+	call.opcode = JUMP;
+	module_.instructions.push_back(call);
+	Instruction halt;
+	halt.opcode = HLT;
+	module_.instructions.push_back(halt);
 }
 
 void Compiler::Visit(FunctionDefinitionNode* node)
 {
-	std::cout << "Function " << node->name() << std::endl;
-	//auto existingFunction = module_->functionTable.find(node->name());
-	//if (existingFunction == module_->functionTable.end()) {
-		//throw "Function already exists";
+	//auto existingFunction = module_.functionTable.find(node->name());
+	//if (existingFunction == module_.functionTable.end()) {
+	//throw "Function already exists";
 	//}
 	Function function;
 	function.name = node->name();
-	auto returnType = module_->typeTable.find(node->type());
-	if (returnType == module_->typeTable.end()) {
-			throw "Unknown function return type";
+	function.offset = module_.instructions.size();
+	std::cout << "Function " << function.name << " with offset " << function.offset << std::endl;
+	auto returnType = module_.typeTable.find(node->type());
+	if (returnType == module_.typeTable.end()) {
+		throw "Unknown function return type";
 	}
 	function.returnType = returnType->second;
 	for (auto argumentNode : node->arguments()) {
-		auto type = module_->typeTable.find(node->type());
-		if (type == module_->typeTable.end()) {
+		auto type = module_.typeTable.find(node->type());
+		if (type == module_.typeTable.end()) {
 			throw "Unknown argument type";
 		}
 	}
 	for (auto child : node->children()) {
 		child->Accept(this);
 	}
-	module_->functionTable[function.name] = function;
+	Instruction ret;
+	ret.opcode = RETURN;
+	module_.instructions.push_back(ret);
+	module_.functionTable[function.name] = function;
 }
 
 void Compiler::Visit(FunctionArgumentNode* node) {}
 void Compiler::Visit(VariableDeclarationNode* node) {}
-void Compiler::Visit(ValueNode* node) {}
+void Compiler::Visit(ValueNode* node)
+{
+	std::cout << "Value node with type " << node->type() << std::endl;
+	if (module_.typeTable.find(node->type()) == module_.typeTable.end()) {
+		throw "Unknown value type";
+	}
+	Type type = module_.typeTable[node->type()];
+	if (type.name == "String") {
+		int stringIndex = module_.stringTable.GetStringIndex(node->value()->content);
+		if (stringIndex == -1) {
+			stringIndex = module_.stringTable.Add(node->value()->content);
+		}
+		Instruction saveStringIndex;
+		saveStringIndex.opcode = PUSHI;
+		saveStringIndex.arg1 = stringIndex;
+		module_.instructions.push_back(saveStringIndex);
+	}
+}
 
-void Compiler::Visit(FunctionCallNode* node) {
+void Compiler::Visit(FunctionCallNode* node)
+{
 	std::cout << "Call function " << node->functionName() << std::endl;
-	auto calledFunction = module_->functionTable.find(node->functionName());
-	if (calledFunction == module_->functionTable.end()) {
+	auto calledFunction = module_.functionTable.find(node->functionName());
+	if (calledFunction == module_.functionTable.end()) {
 		throw "Calling unknown function";
 	}
 	Instruction saveReturnAddress;
 	saveReturnAddress.opcode = PUSHI;
-	saveReturnAddress.arg1 = module_->ip + 2;
-	module_->instructions.push_back(saveReturnAddress);
-	module_->ip++;
+	saveReturnAddress.arg1 = module_.instructions.size() + 4;
+	module_.instructions.push_back(saveReturnAddress);
+	for (auto argument : node->children()) {
+		argument->Accept(this);
+	}
+	Instruction pushJmpAddress;
+	pushJmpAddress.opcode = PUSHI;
+	pushJmpAddress.arg1 = calledFunction->second.offset;
+	module_.instructions.push_back(pushJmpAddress);
 	Instruction call;
-	call.opcode = CALL;
-	call.arg1 = calledFunction->second.offset;
-	module_->instructions.push_back(call);
-	Function function;
+	call.opcode = JUMP;
+	module_.instructions.push_back(call);
 }
 
 void Compiler::Visit(VariableNode* node) {}
+
+Module& Compiler::module()
+{
+	return module_;
+}

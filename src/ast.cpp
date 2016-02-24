@@ -32,6 +32,7 @@ void TypedNode::setType(std::string type)
 
 ValueNode::ValueNode(std::shared_ptr<Value> value) : value_(value)
 {
+	type_ = value->type;
 
 }
 

@@ -1,4 +1,5 @@
 fn main() : Int
 {
 	print("Hello, world");
+	print("YO!");
 }

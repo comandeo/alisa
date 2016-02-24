@@ -5,6 +5,7 @@
 #include "parser.hpp"
 #include "ast_printer.hpp"
 #include "compiler.hpp"
+#include "module.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -24,30 +25,41 @@ int main(int argc, char* argv[])
     }
     auto tokenizer = make_shared<Tokenizer>(source);
     Parser parser(tokenizer);
-    std::shared_ptr<ModuleRootNode> moduleNode;
+    shared_ptr<ModuleRootNode> moduleNode;
     try {
         moduleNode = parser.Parse();
     } catch (char const* e) {
-        std::cout << e;
+        cout << e;
         return 1;
     }
     if (moduleNode == nullptr) {
-        std::cout << "Parsing error" << std::endl;
+        cout << "Parsing error" << endl;
         return 1;
     }
-    std::cout << std::endl;
+    cout << endl;
     AstPrinter astPrinter;
     astPrinter.Visit(moduleNode.get());
 
-    std::cout << std::endl;
-    std::cout << "Compiling...";
-    std::cout << std::endl;
+    cout << endl;
+    cout << "Compiling...";
+    cout << endl;
 	Compiler compiler;
 	try {
 		compiler.Visit(moduleNode.get());
     } catch (char const* e) {
-        std::cout << e;
+        cout << e;
         return 1;
     }
+	int i = 0;
+	for (auto instruction : compiler.module().instructions) {
+		cout << i << ": ";
+		instruction.Trace();
+		i++;
+	}
+    cout << endl;
+	cout << "Executing..." << endl;
+    cout << endl;
+	VM vm;
+	vm.Process(compiler.module());
     return 0;
 }
