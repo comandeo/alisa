@@ -1,5 +1,4 @@
 #include <cctype>
-#include <iostream>
 #include "tokenizer.hpp"
 
 Tokenizer::Tokenizer(std::string& source)

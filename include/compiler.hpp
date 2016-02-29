@@ -20,6 +20,7 @@ public:
 	virtual void Visit(VariableNode* node);
 	Module& module();
 private:
+	void buildStandardLibrary();
 	Module module_;
 };
 

@@ -29,15 +29,17 @@ struct Token {
 	TokenType type;
 	std::string value;
 
-	void Trace()
+	std::string ToString()
 	{
+		std::string result = "";
 		if (type == IDENTIFIER) {
-			std::cout << "Token: IDENTIFIER (" << value << ")" << std::endl;
+			result.append("Token: IDENTIFIER (").append(value).append(")");
 		} else if (type == INTEGER) {
-			std::cout << "Token: INTEGER (" << value << ")" << std::endl;
+			result.append("Token: INTEGER (").append(value).append(")");
 		} else {
-			std::cout << "Token: " << value << std::endl;
+			result.append("Token: ").append(value);
 		}
+		return result;
 	}
 };
 

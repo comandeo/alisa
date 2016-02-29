@@ -1,26 +1,28 @@
 #include <iostream>
 #include "module.hpp"
 
-void Instruction::Trace()
+std::string Instruction::ToString()
 {
+	std::string result;
 	switch (opcode) {
 	case HLT:
-		std::cout << "HLT";
+		result = "HLT";
 		break;
 	case PUSHI:
-		std::cout << "PUSHI " << arg1;
+		result = "PUSHI ";
+	    result.append(std::to_string(arg1));
 		break;
 	case JUMP:
-		std::cout << "JUMP";
+		result ="JUMP";
 		break;
 	case RETURN:
-		std::cout << "RETURN";
+		result = "RETURN";
 		break;
 	case PRINT:
-		std::cout << "PRINT";
+		result = "PRINT";
 		break;
 	}
-	std::cout << std::endl;
+	return result;
 }
 
 int StringTable::Add(std::string& string)
@@ -42,30 +44,4 @@ int StringTable::GetStringIndex(std::string& string)
 std::string& StringTable::GetStringByIndex(int index)
 {
 	return strings_[index];
-}
-
-Module::Module()
-{
-	typeTable["Void"] = Type();
-	typeTable["Void"].name = "Void";
-	typeTable["Int"] = Type();
-	typeTable["Int"].name = "Int";
-	typeTable["String"] = Type();
-	typeTable["String"].name = "String";
-
-	Function print;
-	print.name = "print";
-	print.returnType = typeTable["Void"];
-	print.offset = 0;
-	FunctionArgument argument;
-	argument.type = typeTable["String"];
-	argument.name = "str";
-	print.arguments.push_back(argument);
-	functionTable[print.name] = print;
-	Instruction prt;
-	prt.opcode = PRINT;
-	instructions.push_back(prt);
-	Instruction ret;
-	ret.opcode = RETURN;
-	instructions.push_back(ret);
 }

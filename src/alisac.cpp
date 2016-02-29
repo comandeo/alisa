@@ -6,6 +6,8 @@
 #include "ast_printer.hpp"
 #include "compiler.hpp"
 #include "module.hpp"
+#include "logger.hpp"
+#include "module_serializer.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -37,9 +39,6 @@ int main(int argc, char* argv[])
         return 1;
     }
     cout << endl;
-    AstPrinter astPrinter;
-    astPrinter.Visit(moduleNode.get());
-
     cout << endl;
     cout << "Compiling...";
     cout << endl;
@@ -52,10 +51,12 @@ int main(int argc, char* argv[])
     }
 	int i = 0;
 	for (auto instruction : compiler.module().instructions) {
-		cout << i << ": ";
-		instruction.Trace();
+		cout << i << ": " << instruction.ToString() << endl;
 		i++;
 	}
+	ModuleSerializerImpl serializer;
+	serializer.Serialize("a.out", make_shared<Module>(compiler.module()));
+	serializer.Deserialize("a.out");
     cout << endl;
 	cout << "Executing..." << endl;
     cout << endl;

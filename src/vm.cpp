@@ -9,10 +9,7 @@ void VM::Process(Module& module)
 	int idx;
 	std::string str;
 	while(isRunning) {
-		//char c;
-		//std::cin >> c;
 		auto instruction = module.instructions[ip_];
-		instruction.Trace();
 		switch (instruction.opcode) {
 		case PUSHI:
 			stack_.push(instruction.arg1);
@@ -36,6 +33,5 @@ void VM::Process(Module& module)
 		case HLT:
 			isRunning = false;
 		}
-		std::cout << "IP: " << ip_ << std::endl;
 	}
 }

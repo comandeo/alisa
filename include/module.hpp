@@ -17,7 +17,7 @@ struct Instruction
 {
 	Opcode opcode;
 	int arg1 = 0, arg2 = 0, arg3 = 0;
-	void Trace();
+	std::string ToString();
 };
 
 struct Type
@@ -57,7 +57,6 @@ struct Module
 	std::unordered_map<std::string, Function> functionTable;
 	StringTable stringTable;
 	std::vector<Instruction> instructions;
-	Module();
 	int entryPoint;
 };
 

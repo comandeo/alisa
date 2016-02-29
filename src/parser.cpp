@@ -226,5 +226,5 @@ void Parser::PassedArgumentsTrails(std::shared_ptr<FunctionCallNode> node)
 void Parser::GetNextToken()
 {
 	nextToken_ = tokenizer_->GetNextToken();
-	nextToken_.Trace();
+	logger_->Debug(nextToken_.ToString());
 }

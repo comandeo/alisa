@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_map>
 #include "ast.hpp"
+#include "logger.hpp"
 #include "tokenizer.hpp"
 
 class Parser
@@ -28,6 +29,7 @@ private:
 	void PassedArgumentsTrails(std::shared_ptr<FunctionCallNode> node);
 	Token nextToken_;
 	std::shared_ptr<Tokenizer> tokenizer_;
+	std::shared_ptr<Logger> logger_ = LoggerFactory::GetLogger("Parser");
 };
 
 #endif

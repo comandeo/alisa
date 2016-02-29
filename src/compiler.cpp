@@ -5,6 +5,7 @@
 void Compiler::Visit(ModuleRootNode* node)
 {
 	module_ = Module();
+	buildStandardLibrary();
 	for (auto child : node->children()) {
 		child->Accept(this);
 	}
@@ -31,10 +32,6 @@ void Compiler::Visit(ModuleRootNode* node)
 
 void Compiler::Visit(FunctionDefinitionNode* node)
 {
-	//auto existingFunction = module_.functionTable.find(node->name());
-	//if (existingFunction == module_.functionTable.end()) {
-	//throw "Function already exists";
-	//}
 	Function function;
 	function.name = node->name();
 	function.offset = module_.instructions.size();
@@ -108,4 +105,30 @@ void Compiler::Visit(VariableNode* node) {}
 Module& Compiler::module()
 {
 	return module_;
+}
+
+void Compiler::buildStandardLibrary()
+{
+	module_.typeTable["Void"] = Type();
+	module_.typeTable["Void"].name = "Void";
+	module_.typeTable["Int"] = Type();
+	module_.typeTable["Int"].name = "Int";
+	module_.typeTable["String"] = Type();
+	module_.typeTable["String"].name = "String";
+
+	Function print;
+	print.name = "print";
+	print.returnType = module_.typeTable["Void"];
+	print.offset = 0;
+	FunctionArgument argument;
+	argument.type = module_.typeTable["String"];
+	argument.name = "str";
+	print.arguments.push_back(argument);
+	module_.functionTable[print.name] = print;
+	Instruction prt;
+	prt.opcode = PRINT;
+	module_.instructions.push_back(prt);
+	Instruction ret;
+	ret.opcode = RETURN;
+	module_.instructions.push_back(ret);
 }
