@@ -16,10 +16,14 @@ void ModuleSerializerImpl::Serialize(const char* filename, std::shared_ptr<Modul
 	// Write type table
 	uint32_t tableNameSize = static_cast<uint32_t>(module->typeTable.size());
 	outputFile.write(reinterpret_cast<char*>(&tableNameSize), sizeof(uint32_t));
-	for (auto& typeEntry : module->typeTable) {
-		uint32_t typeNameSize = static_cast<uint32_t>(typeEntry.second.name.size());
+//	for (auto& typeEntry : module->typeTable) {
+	for (auto iterator = module->typeTable.GetIterator(); iterator.hasNext(); ) {
+		auto typeEntry = iterator.next();
+		logger_->Debug("Type to be serialized");
+		logger_->Debug(typeEntry->name());
+		uint32_t typeNameSize = static_cast<uint32_t>(typeEntry->name().size());
 		outputFile.write(reinterpret_cast<char*>(&typeNameSize), sizeof(uint32_t));
-		outputFile.write(typeEntry.second.name.c_str(), typeNameSize);
+		outputFile.write(typeEntry->name().c_str(), typeNameSize);
 	}
 }
 
@@ -44,12 +48,12 @@ std::shared_ptr<Module> ModuleSerializerImpl::Deserialize(const char* filename)
 		char* nameBuffer = new char[typeNameSize + 1]();
 		inputFile.read(nameBuffer, typeNameSize);
 		logger_->Debug(nameBuffer);
-		Type type;
-		type.name = string(nameBuffer);
+		auto type = make_shared<Type>();
+		type->setName(string(nameBuffer));
 		delete[] nameBuffer;
-		module->typeTable[type.name] = type;
+		module->typeTable.Put(type);
 		logger_->Debug("Type loaded");
-		logger_->Debug(type.name);
+		logger_->Debug(type->name());
 	}
 	return module;
 }

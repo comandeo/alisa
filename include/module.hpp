@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "nameable.hpp"
+#include "symbol_table.hpp"
 
 enum Opcode {
 	HLT,
@@ -20,14 +22,32 @@ struct Instruction
 	std::string ToString();
 };
 
-struct Type
+class Type : public Nameable
 {
-	std::string name;
+public:
+	Type()
+	{
+		name_ = std::string("");
+	}
+	explicit Type(const char* name)
+	{
+		name_ = name;
+	}
+	virtual std::string name() const
+	{
+		return name_;
+	}
+	virtual void setName(const std::string& name)
+	{
+		name_ = name;
+	}
+private:
+	std::string name_;
 };
 
 struct FunctionArgument
 {
-	Type type;
+	std::shared_ptr<Type> type;
 	std::string name;
 };
 
@@ -35,7 +55,7 @@ struct Function
 {
 	std::string name;
 	std::vector<FunctionArgument> arguments;
-	Type returnType;
+	std::shared_ptr<Type> returnType;
 	unsigned long offset;
 };
 
@@ -53,7 +73,7 @@ private:
 
 struct Module
 {
-	std::unordered_map<std::string, Type> typeTable;
+	SymbolTable typeTable;
 	std::unordered_map<std::string, Function> functionTable;
 	StringTable stringTable;
 	std::vector<Instruction> instructions;

@@ -36,14 +36,14 @@ void Compiler::Visit(FunctionDefinitionNode* node)
 	function.name = node->name();
 	function.offset = module_.instructions.size();
 	std::cout << "Function " << function.name << " with offset " << function.offset << std::endl;
-	auto returnType = module_.typeTable.find(node->type());
-	if (returnType == module_.typeTable.end()) {
+	auto returnType = module_.typeTable.Get(node->type());
+	if (returnType == nullptr) {
 		throw "Unknown function return type";
 	}
-	function.returnType = returnType->second;
+	function.returnType = std::dynamic_pointer_cast<Type>(returnType);
 	for (auto argumentNode : node->arguments()) {
-		auto type = module_.typeTable.find(node->type());
-		if (type == module_.typeTable.end()) {
+		auto type = module_.typeTable.Get(node->type());
+		if (type == nullptr) {
 			throw "Unknown argument type";
 		}
 	}
@@ -61,11 +61,11 @@ void Compiler::Visit(VariableDeclarationNode* node) {}
 void Compiler::Visit(ValueNode* node)
 {
 	std::cout << "Value node with type " << node->type() << std::endl;
-	if (module_.typeTable.find(node->type()) == module_.typeTable.end()) {
+	if (module_.typeTable.Get(node->type()) == nullptr) {
 		throw "Unknown value type";
 	}
-	Type type = module_.typeTable[node->type()];
-	if (type.name == "String") {
+	auto type = module_.typeTable.Get(node->type());
+	if (type->name() == "String") {
 		int stringIndex = module_.stringTable.GetStringIndex(node->value()->content);
 		if (stringIndex == -1) {
 			stringIndex = module_.stringTable.Add(node->value()->content);
@@ -109,19 +109,16 @@ Module& Compiler::module()
 
 void Compiler::buildStandardLibrary()
 {
-	module_.typeTable["Void"] = Type();
-	module_.typeTable["Void"].name = "Void";
-	module_.typeTable["Int"] = Type();
-	module_.typeTable["Int"].name = "Int";
-	module_.typeTable["String"] = Type();
-	module_.typeTable["String"].name = "String";
+	module_.typeTable.Put(std::make_shared<Type>("Void"));
+	module_.typeTable.Put(std::make_shared<Type>("Int"));
+	module_.typeTable.Put(std::make_shared<Type>("String"));
 
 	Function print;
 	print.name = "print";
-	print.returnType = module_.typeTable["Void"];
+	print.returnType = std::dynamic_pointer_cast<Type>(module_.typeTable.Get("Void"));
 	print.offset = 0;
 	FunctionArgument argument;
-	argument.type = module_.typeTable["String"];
+	argument.type = std::dynamic_pointer_cast<Type>(module_.typeTable.Get("String"));
 	argument.name = "str";
 	print.arguments.push_back(argument);
 	module_.functionTable[print.name] = print;
