@@ -5,7 +5,7 @@
 #include <iterator>
 #include "symbol_table.hpp"
 
-size_t SymbolTable::size()
+size_t SymbolTable::size() const
 {
 	return table_.size();
 }

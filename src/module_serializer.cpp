@@ -13,18 +13,7 @@ void ModuleSerializerImpl::Serialize(const char* filename, std::shared_ptr<Modul
 		logger_->Info("Cannot open output file");
 		throw "Cannot open output file";
 	}
-	// Write type table
-	uint32_t tableNameSize = static_cast<uint32_t>(module->typeTable.size());
-	outputFile.write(reinterpret_cast<char*>(&tableNameSize), sizeof(uint32_t));
-//	for (auto& typeEntry : module->typeTable) {
-	for (auto iterator = module->typeTable.GetIterator(); iterator.hasNext(); ) {
-		auto typeEntry = iterator.next();
-		logger_->Debug("Type to be serialized");
-		logger_->Debug(typeEntry->name());
-		uint32_t typeNameSize = static_cast<uint32_t>(typeEntry->name().size());
-		outputFile.write(reinterpret_cast<char*>(&typeNameSize), sizeof(uint32_t));
-		outputFile.write(typeEntry->name().c_str(), typeNameSize);
-	}
+	serialize(outputFile, module->typeTable);
 }
 
 std::shared_ptr<Module> ModuleSerializerImpl::Deserialize(const char* filename)
@@ -36,6 +25,26 @@ std::shared_ptr<Module> ModuleSerializerImpl::Deserialize(const char* filename)
 		logger_->Info("Cannot open input file");
 		throw "Cannot open input file";
 	}
+	deserialize(inputFile, module->typeTable);
+	return module;
+}
+void ModuleSerializerImpl::serialize(std::ofstream& outputFile, SymbolTable& symbolTable)
+{
+	uint32_t tableNameSize = static_cast<uint32_t>(symbolTable.size());
+	outputFile.write(reinterpret_cast<char*>(&tableNameSize), sizeof(uint32_t));
+	for (auto iterator = symbolTable.GetIterator(); iterator.hasNext(); ) {
+		auto tableEntry = iterator.next();
+		logger_->Debug("Type to be serialized");
+		logger_->Debug(tableEntry->name());
+		uint32_t typeNameSize = static_cast<uint32_t>(tableEntry->name().size());
+		outputFile.write(reinterpret_cast<char*>(&typeNameSize), sizeof(uint32_t));
+		outputFile.write(tableEntry->name().c_str(), typeNameSize);
+	}
+}
+
+void ModuleSerializerImpl::deserialize(std::ifstream& inputFile, SymbolTable& symbolTable)
+{
+	using namespace std;
 	char sizeBuf[4] = {0};
 	inputFile.read(sizeBuf, 4);
 	uint32_t tableNameSize = *(reinterpret_cast<uint32_t*>(sizeBuf));
@@ -51,9 +60,8 @@ std::shared_ptr<Module> ModuleSerializerImpl::Deserialize(const char* filename)
 		auto type = make_shared<Type>();
 		type->setName(string(nameBuffer));
 		delete[] nameBuffer;
-		module->typeTable.Put(type);
+		symbolTable.Put(type);
 		logger_->Debug("Type loaded");
 		logger_->Debug(type->name());
 	}
-	return module;
 }
