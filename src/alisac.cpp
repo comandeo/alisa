@@ -54,9 +54,9 @@ int main(int argc, char* argv[])
 		cout << i << ": " << instruction.ToString() << endl;
 		i++;
 	}
-	ModuleSerializerImpl serializer;
-	serializer.Serialize("a.out", make_shared<Module>(compiler.module()));
-	serializer.Deserialize("a.out");
+//	ModuleSerializerImpl serializer;
+//	serializer.Serialize("/Users/mitja/my/alisa/test/a.out", make_shared<Module>(compiler.module()));
+//	serializer.Deserialize("/Users/mitja/my/alisa/test/a.out");
     cout << endl;
 	cout << "Executing..." << endl;
     cout << endl;

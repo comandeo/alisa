@@ -86,7 +86,7 @@ void Compiler::Visit(FunctionCallNode* node)
 	}
 	Instruction saveReturnAddress;
 	saveReturnAddress.opcode = PUSHI;
-	saveReturnAddress.arg1 = module_.instructions.size() + 4;
+	saveReturnAddress.arg1 = module_.instructions.size() + 3 + node->children().size();
 	module_.instructions.push_back(saveReturnAddress);
 	for (auto argument : node->children()) {
 		argument->Accept(this);
