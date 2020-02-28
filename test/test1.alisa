@@ -1,10 +1,11 @@
-fn f() : Void
+fn f() : String
 {
 	print("I am just f");
+	return "I am returned from f";
+	print("I should not be printed ever!");
 }
 
 fn main() : Int
 {
-	print("Hello, world");
-	f();
+	print(f());
 }

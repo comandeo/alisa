@@ -18,10 +18,12 @@ expressions -> expression; expressions
 expressions -> EPSILON
 
 expression -> variable_declaration
+expression -> function_return
 expression -> function_call
 expression -> rvalue
 expression -> EPSILON
 
+function_return -> RETURN rvalue
 variable_declaration -> LET IDENTIFIER type_specifier assignment
 
 assignment -> = rvalue

@@ -12,7 +12,7 @@ void AbstractLogger::Info(const std::string& message)
 }
 
 StdoutLogger::StdoutLogger(const char* context, LogLevel minLogLevel)
-	: context_(context), minLogLevel_(minLogLevel)
+	: minLogLevel_(minLogLevel), context_(context)
 {
 
 }

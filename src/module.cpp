@@ -5,20 +5,20 @@ std::string Instruction::ToString()
 {
 	std::string result;
 	switch (opcode) {
-	case HLT:
+    case Opcode::HLT:
 		result = "HLT";
 		break;
-	case PUSHI:
+	case Opcode::PUSHI:
 		result = "PUSHI ";
 	    result.append(std::to_string(arg1));
 		break;
-	case JUMP:
+	case Opcode::JUMP:
 		result ="JUMP";
 		break;
-	case RETURN:
+	case Opcode::RETURN:
 		result = "RETURN";
 		break;
-	case PRINT:
+	case Opcode::PRINT:
 		result = "PRINT";
 		break;
 	}

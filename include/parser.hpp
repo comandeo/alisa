@@ -24,6 +24,7 @@ private:
 	void Expression(std::shared_ptr<TypedNode> node);
 	void Assignment(std::shared_ptr<Node> node);
 	void VariableDeclaration(std::shared_ptr<TypedNode> node);
+    void FunctionReturn(std::shared_ptr<TypedNode> node);
 	void Rvalue(std::shared_ptr<Node> node);
 	void PassedArguments(std::shared_ptr<FunctionCallNode> node);
 	void PassedArgumentsTrails(std::shared_ptr<FunctionCallNode> node);

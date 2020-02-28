@@ -15,6 +15,7 @@ public:
 	virtual void Visit(FunctionDefinitionNode* node);
 	virtual void Visit(FunctionArgumentNode* node);
 	virtual void Visit(VariableDeclarationNode* node);
+    virtual void Visit(FunctionReturnNode* node);
 	virtual void Visit(ValueNode* node);
 	virtual void Visit(FunctionCallNode* node);
 	virtual void Visit(VariableNode* node);

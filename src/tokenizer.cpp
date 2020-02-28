@@ -10,7 +10,7 @@ Token Tokenizer::GetNextToken()
 {
 	using namespace std;
 	if (source_.length() == 0) {
-		return Token(EPSILON);
+		return Token(TokenType::EPSILON);
 	}
 	int i = 0;
 	while(isspace(source_[i])) {
@@ -23,35 +23,35 @@ Token Tokenizer::GetNextToken()
 	switch (source_[0]) {
 		case '(':
 		source_.erase(0, 1);
-		return Token(L_BRACE, "(");
+		return Token(TokenType::L_BRACE, "(");
 
 		case ')':
 		source_.erase(0, 1);
-		return Token(R_BRACE, ")");
+		return Token(TokenType::R_BRACE, ")");
 
 		case '{':
 		source_.erase(0, 1);
-		return Token(L_CURLY_BRACE, "{");
+		return Token(TokenType::L_CURLY_BRACE, "{");
 
 		case '}':
 		source_.erase(0, 1);
-		return Token(R_CURLY_BRACE, "}");
+		return Token(TokenType::R_CURLY_BRACE, "}");
 
 		case ':':
 		source_.erase(0, 1);
-		return Token(COLON, ":");
+		return Token(TokenType::COLON, ":");
 
 		case ';':
 		source_.erase(0, 1);
-		return Token(SEMICOLON, ";");
+		return Token(TokenType::SEMICOLON, ";");
 
 		case ',':
 		source_.erase(0, 1);
-		return Token(COMMA, ";");
+		return Token(TokenType::COMMA, ";");
 
 		case '=':
 		source_.erase(0, 1);
-		return Token(EQ, "=");
+		return Token(TokenType::EQ, "=");
 
 		case '"':
 		i = 1;
@@ -64,7 +64,7 @@ Token Tokenizer::GetNextToken()
 			tokenValue = "";
 		}
 		source_.erase(0, i + 1);
-		return Token(STRING_LITERAL, tokenValue);
+		return Token(TokenType::STRING_LITERAL, tokenValue);
 
 		default:
 		i = 1;
@@ -86,13 +86,15 @@ Token Tokenizer::DetectLongToken(std::string tokenValue)
 	Token token;
 	token.value = tokenValue;
 	if (tokenValue == "let") {
-		token.type = LET;
+		token.type = TokenType::LET;
 	} else if (tokenValue == "fn") {
-		token.type = FN;
+		token.type = TokenType::FN;
+    } else if (tokenValue == "return") {
+        token.type = TokenType::RETURN;
 	} else if (isdigit(tokenValue[0])) {
-		token.type = INTEGER;
+		token.type = TokenType::INTEGER;
 	} else {
-		token.type = IDENTIFIER;
+		token.type = TokenType::IDENTIFIER;
 	}
 	return token;
 }

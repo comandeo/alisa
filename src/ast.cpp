@@ -130,6 +130,17 @@ void FunctionCallNode::Accept(AstVisitor* visitor)
 	visitor->Visit(this);
 }
 
+void FunctionReturnNode::Accept(AstVisitor* visitor)
+{
+    visitor->Visit(this);
+}
+
+std::shared_ptr<Value> FunctionReturnNode::value()
+{
+    return nullptr;
+}
+
+
 std::string FunctionCallNode::functionName()
 {
 	return functionName_;

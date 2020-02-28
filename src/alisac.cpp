@@ -40,13 +40,17 @@ int main(int argc, char* argv[])
     }
     cout << endl;
     cout << endl;
+    AstPrinter printer;
+    printer.Visit(moduleNode.get());
+    cout << endl;
+    cout << endl;
     cout << "Compiling...";
     cout << endl;
 	Compiler compiler;
 	try {
 		compiler.Visit(moduleNode.get());
     } catch (char const* e) {
-        cout << e;
+        cout << e << endl;;
         return 1;
     }
 	int i = 0;

@@ -3,8 +3,6 @@
 #include <fstream>
 #include "module_serializer.hpp"
 
-const unsigned int sizeBytes = 4;
-
 void ModuleSerializerImpl::Serialize(const char* filename, std::shared_ptr<Module> module)
 {
 	using namespace std;

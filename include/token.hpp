@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-enum TokenType {
+enum class TokenType {
 	UNKNOWN,
 	EPSILON,
 	IDENTIFIER,
@@ -20,11 +20,12 @@ enum TokenType {
 	EQ,
 	// KEYWORDS
 	LET,
-	FN
+	FN,
+    RETURN
 };
 
 struct Token {
-	Token(TokenType typeP = UNKNOWN, std::string valueP = "")
+	Token(TokenType typeP = TokenType::UNKNOWN, std::string valueP = "")
 		: type(typeP), value(valueP) {}
 	TokenType type;
 	std::string value;
@@ -32,9 +33,9 @@ struct Token {
 	std::string ToString()
 	{
 		std::string result = "";
-		if (type == IDENTIFIER) {
+		if (type == TokenType::IDENTIFIER) {
 			result.append("Token: IDENTIFIER (").append(value).append(")");
-		} else if (type == INTEGER) {
+		} else if (type == TokenType::INTEGER) {
 			result.append("Token: INTEGER (").append(value).append(")");
 		} else {
 			result.append("Token: ").append(value);

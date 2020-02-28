@@ -72,6 +72,19 @@ public:
 		}
 		level_--;
 	}
+    
+    virtual void Visit(FunctionReturnNode* node)
+    {
+        PrintLeadingSpaces();
+        std::cout
+        << "FunctionReturnNode"
+        << std::endl;
+        level_++;
+        for (const auto child : node->children()) {
+            child->Accept(this);
+        }
+        level_--;
+    }
 
 	virtual void Visit(ValueNode* node)
 	{

@@ -15,18 +15,18 @@ void Compiler::Visit(ModuleRootNode* node)
 	}
 	module_.entryPoint = module_.instructions.size();
 	Instruction saveReturnAddress;
-	saveReturnAddress.opcode = PUSHI;
+	saveReturnAddress.opcode = Opcode::PUSHI;
 	saveReturnAddress.arg1 = module_.instructions.size() + 3;
 	module_.instructions.push_back(saveReturnAddress);
 	Instruction pushJmpAddress;
-	pushJmpAddress.opcode = PUSHI;
+	pushJmpAddress.opcode = Opcode::PUSHI;
 	pushJmpAddress.arg1 = main->second.offset;
 	module_.instructions.push_back(pushJmpAddress);
 	Instruction call;
-	call.opcode = JUMP;
+	call.opcode = Opcode::JUMP;
 	module_.instructions.push_back(call);
 	Instruction halt;
-	halt.opcode = HLT;
+	halt.opcode = Opcode::HLT;
 	module_.instructions.push_back(halt);
 }
 
@@ -49,15 +49,29 @@ void Compiler::Visit(FunctionDefinitionNode* node)
 	}
 	for (auto child : node->children()) {
 		child->Accept(this);
+        if(std::dynamic_pointer_cast<FunctionReturnNode>(child)) {
+            Instruction ret;
+            ret.opcode = Opcode::RETURN;
+            module_.instructions.push_back(ret);
+            module_.functionTable[function.name] = function;
+            return;
+        }
 	}
-	Instruction ret;
-	ret.opcode = RETURN;
-	module_.instructions.push_back(ret);
+	Instruction jmp;
+	jmp.opcode = Opcode::JUMP;
+	module_.instructions.push_back(jmp);
 	module_.functionTable[function.name] = function;
 }
 
 void Compiler::Visit(FunctionArgumentNode* node) {}
 void Compiler::Visit(VariableDeclarationNode* node) {}
+
+void Compiler::Visit(FunctionReturnNode* node)
+{
+    for (auto child : node->children()) {
+        child->Accept(this);
+    }
+}
 void Compiler::Visit(ValueNode* node)
 {
 	std::cout << "Value node with type " << node->type() << std::endl;
@@ -71,7 +85,7 @@ void Compiler::Visit(ValueNode* node)
 			stringIndex = module_.stringTable.Add(node->value()->content);
 		}
 		Instruction saveStringIndex;
-		saveStringIndex.opcode = PUSHI;
+		saveStringIndex.opcode = Opcode::PUSHI;
 		saveStringIndex.arg1 = stringIndex;
 		module_.instructions.push_back(saveStringIndex);
 	}
@@ -85,19 +99,21 @@ void Compiler::Visit(FunctionCallNode* node)
 		throw "Calling unknown function";
 	}
 	Instruction saveReturnAddress;
-	saveReturnAddress.opcode = PUSHI;
-	saveReturnAddress.arg1 = module_.instructions.size() + 3 + node->children().size();
+	saveReturnAddress.opcode = Opcode::PUSHI;
 	module_.instructions.push_back(saveReturnAddress);
+    auto returnAddressIdx = module_.instructions.size() - 1;
 	for (auto argument : node->children()) {
 		argument->Accept(this);
 	}
 	Instruction pushJmpAddress;
-	pushJmpAddress.opcode = PUSHI;
+	pushJmpAddress.opcode = Opcode::PUSHI;
 	pushJmpAddress.arg1 = calledFunction->second.offset;
 	module_.instructions.push_back(pushJmpAddress);
 	Instruction call;
-	call.opcode = JUMP;
+	call.opcode = Opcode::JUMP;
 	module_.instructions.push_back(call);
+    saveReturnAddress.arg1 = module_.instructions.size();
+    module_.instructions[returnAddressIdx] = saveReturnAddress;
 }
 
 void Compiler::Visit(VariableNode* node) {}
@@ -123,9 +139,9 @@ void Compiler::buildStandardLibrary()
 	print.arguments.push_back(argument);
 	module_.functionTable[print.name] = print;
 	Instruction prt;
-	prt.opcode = PRINT;
+	prt.opcode = Opcode::PRINT;
 	module_.instructions.push_back(prt);
-	Instruction ret;
-	ret.opcode = RETURN;
-	module_.instructions.push_back(ret);
+	Instruction jmp;
+	jmp.opcode = Opcode::JUMP;
+	module_.instructions.push_back(jmp);
 }

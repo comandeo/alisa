@@ -7,7 +7,7 @@
 #include "nameable.hpp"
 #include "symbol_table.hpp"
 
-enum Opcode {
+enum class Opcode {
 	HLT,
 	PUSHI,
 	JUMP,
@@ -33,6 +33,7 @@ public:
 	{
 		name_ = name;
 	}
+    virtual ~Type() {}
 	virtual std::string name() const
 	{
 		return name_;

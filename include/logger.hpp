@@ -31,6 +31,7 @@ class StdoutLogger : public AbstractLogger
 {
 public:
 	StdoutLogger(const char* context, LogLevel minLogLevel);
+    virtual ~StdoutLogger() {}
 	virtual void Debug(const char* message);
 	virtual void Info(const char* message);
 private:
