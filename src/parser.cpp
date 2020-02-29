@@ -140,10 +140,6 @@ void Parser::Expression(std::shared_ptr<TypedNode> node)
             }
             break;
     }
-//    if (nextToken_.type != TokenType::SEMICOLON) {
-//        std::cout << nextToken_.value << std::endl;
-//        throw "SEMICOLON expected in the end of expression";
-//    }
 }
 
 void Parser::VariableDeclaration(std::shared_ptr<TypedNode> node)

@@ -8,11 +8,11 @@
 class VM
 {
 public:
-	void Process(Module& module);
+    void Process(Module& module);
 private:
-	int ip_;
-	std::stack<int> stack_;
-	StringTable stringTable_;
+    int ip_;
+    std::stack<int> stack_;
+    StringTable stringTable_;
 };
 
 #endif

@@ -6,10 +6,10 @@
 
 class Tokenizer {
 public:
-	Tokenizer(std::string& source);
-	Token GetNextToken();
+    Tokenizer(std::string& source);
+    Token GetNextToken();
 private:
-	Token DetectLongToken(std::string tokenValue);
-	std::string source_;
+    Token DetectLongToken(std::string tokenValue);
+    std::string source_;
 };
 #endif

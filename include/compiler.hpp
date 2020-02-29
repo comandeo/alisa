@@ -11,18 +11,18 @@
 class Compiler : public AstVisitor
 {
 public:
-	virtual void Visit(ModuleRootNode* node);
-	virtual void Visit(FunctionDefinitionNode* node);
-	virtual void Visit(FunctionArgumentNode* node);
-	virtual void Visit(VariableDeclarationNode* node);
+    virtual void Visit(ModuleRootNode* node);
+    virtual void Visit(FunctionDefinitionNode* node);
+    virtual void Visit(FunctionArgumentNode* node);
+    virtual void Visit(VariableDeclarationNode* node);
     virtual void Visit(FunctionReturnNode* node);
-	virtual void Visit(ValueNode* node);
-	virtual void Visit(FunctionCallNode* node);
-	virtual void Visit(VariableNode* node);
-	Module& module();
+    virtual void Visit(ValueNode* node);
+    virtual void Visit(FunctionCallNode* node);
+    virtual void Visit(VariableNode* node);
+    Module& module();
 private:
-	void buildStandardLibrary();
-	Module module_;
+    void buildStandardLibrary();
+    Module module_;
 };
 
 #endif

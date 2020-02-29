@@ -13,14 +13,14 @@ int main(int argc, char* argv[])
 {
     using namespace std;
     string source;
-    ifstream afile (argv[1] ,ios::in);
+    ifstream afile (/*argv[1]*/ "/Users/mitja/my/alisa/test/test1.alisa", ios::in);
     if(afile.is_open()) {
         string buffer;
         while( getline(afile, buffer) ) {
             source.append(buffer);
         }
-            afile.close();
-        }
+        afile.close();
+    }
     else {
         cout << "Unable to open file" << endl;
         return -1;
@@ -46,25 +46,25 @@ int main(int argc, char* argv[])
     cout << endl;
     cout << "Compiling...";
     cout << endl;
-	Compiler compiler;
-	try {
-		compiler.Visit(moduleNode.get());
+    Compiler compiler;
+    try {
+        compiler.Visit(moduleNode.get());
     } catch (char const* e) {
         cout << e << endl;;
         return 1;
     }
-	int i = 0;
-	for (auto instruction : compiler.module().instructions) {
-		cout << i << ": " << instruction.ToString() << endl;
-		i++;
-	}
-//	ModuleSerializerImpl serializer;
-//	serializer.Serialize("/Users/mitja/my/alisa/test/a.out", make_shared<Module>(compiler.module()));
-//	serializer.Deserialize("/Users/mitja/my/alisa/test/a.out");
+    int i = 0;
+    for (auto instruction : compiler.module().instructions) {
+        cout << i << ": " << instruction.ToString() << endl;
+        i++;
+    }
+    //	ModuleSerializerImpl serializer;
+    //	serializer.Serialize("/Users/mitja/my/alisa/test/a.out", make_shared<Module>(compiler.module()));
+    //	serializer.Deserialize("/Users/mitja/my/alisa/test/a.out");
     cout << endl;
-	cout << "Executing..." << endl;
+    cout << "Executing..." << endl;
     cout << endl;
-	VM vm;
-	vm.Process(compiler.module());
+    VM vm;
+    vm.Process(compiler.module());
     return 0;
 }

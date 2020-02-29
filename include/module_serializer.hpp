@@ -9,19 +9,19 @@
 class ModuleSerializer
 {
 public:
-	virtual void Serialize(const char* filename, std::shared_ptr<Module> module) = 0;
-	virtual std::shared_ptr<Module> Deserialize(const char* filename) = 0;
+    virtual void Serialize(const char* filename, std::shared_ptr<Module> module) = 0;
+    virtual std::shared_ptr<Module> Deserialize(const char* filename) = 0;
 };
 
 class ModuleSerializerImpl : public ModuleSerializer
 {
 public:
-	virtual void Serialize(const char* filename, std::shared_ptr<Module> module);
-	virtual std::shared_ptr<Module> Deserialize(const char* filename);
+    virtual void Serialize(const char* filename, std::shared_ptr<Module> module);
+    virtual std::shared_ptr<Module> Deserialize(const char* filename);
 private:
-	void serialize(std::ofstream& outputFile, SymbolTable& symbolTable);
-	void deserialize(std::ifstream& inputFile, SymbolTable& symbolTable);
-	std::shared_ptr<Logger> logger_ = LoggerFactory::GetLogger("ModuleSerializerImpl");
+    void serialize(std::ofstream& outputFile, SymbolTable& symbolTable);
+    void deserialize(std::ifstream& inputFile, SymbolTable& symbolTable);
+    std::shared_ptr<Logger> logger_ = LoggerFactory::GetLogger("ModuleSerializerImpl");
 };
 
 #endif
